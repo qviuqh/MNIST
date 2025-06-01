@@ -65,3 +65,19 @@ async def predict(data: ImageData):
         return {"digit": digit, "probabilities": prediction[0].tolist()}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Lỗi khi dự đoán: {str(e)}")
+
+@app.get("/weights")
+async def get_weights():
+    try:
+        # Lấy các trọng số cần thiết
+        # W1: Lấy 5 hàng đầu và 5 hàng cuối (input layer), cột 0-2 và 125-127 (hidden layer)
+        w1_subset = np.concatenate((W1[:5, :], W1[-5:, :]), axis=0)  # (10, 128)
+        w1_subset = np.concatenate((w1_subset[:, :3], w1_subset[:, -3:]), axis=1)  # (10, 6)
+        # W2: Lấy hàng 0-2 và 125-127 (hidden layer), tất cả cột (output layer)
+        w2_subset = np.concatenate((W2[:3, :], W2[-3:, :]), axis=0)  # (6, 10)
+        return {
+            "W1": w1_subset.tolist(),
+            "W2": w2_subset.tolist()
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lỗi khi lấy trọng số: {str(e)}")
