@@ -53,6 +53,9 @@ except KeyError as e:
 except AssertionError as e:
     raise Exception(f"Kích thước trọng số không hợp lệ: {str(e)}")
 
+# Serve frontend từ thư mục "frontend"
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
+
 @app.post("/predict")
 async def predict(data: ImageData):
     try:
